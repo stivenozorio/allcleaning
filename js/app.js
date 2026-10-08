@@ -6,9 +6,9 @@
 
   // ---------- constantes ----------
   const ASSETS = {
-    logo: "/public/assets/logo-placeholder.svg",
-    product: "/public/assets/product-placeholder.svg",
-    fuxi: "/public/assets/fuxi-placeholder.svg"
+    logo: "/public/assets/fuxi-face.jpg",   // marca visual provisional: la mascota (reemplazable por el logo oficial)
+    product: "/public/assets/desmanchador-fucsia.jpg",
+    fuxi: "/public/assets/fuxi.jpg"
   };
   const WINDOW_MS = 24 * 60 * 60 * 1000;
   const STATUS_LABEL = { open: "Abierta", pending: "Pendiente", closed: "Cerrada" };
@@ -31,10 +31,11 @@
     if (d.length === 12 && d.startsWith("57")) return `+57 ${d.slice(2, 5)} ${d.slice(5, 8)} ${d.slice(8)}`;
     return `+${d}`;
   }
+  const AVATAR_COLORS = ["#e5198a", "#b80f6f", "#8e3fb5", "#f0a30a", "#d6336c", "#6f42c1", "#e8590c", "#c2185b"];
   const colorFor = (s) => {
     let h = 0;
-    for (const c of String(s)) h = (h * 31 + c.charCodeAt(0)) % 360;
-    return `hsl(${h} 55% 48%)`;
+    for (const c of String(s)) h = (h * 31 + c.charCodeAt(0)) >>> 0;
+    return AVATAR_COLORS[h % AVATAR_COLORS.length];
   };
   const initials = (name) => {
     const parts = String(name || "").trim().split(/\s+/).filter(Boolean);

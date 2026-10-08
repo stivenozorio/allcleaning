@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <meta name="robots" content="noindex, nofollow">
-  <meta name="theme-color" content="#16181d">
+  <meta name="theme-color" content="#c2107a">
   <title>Mensajes ALL · ALL CLEANING</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -28,11 +28,16 @@
   </div>
 
   <!-- Login -->
-  <div id="login" class="screen center" hidden>
-    <form id="loginForm" class="card narrow" autocomplete="on">
-      <img class="login-logo" data-asset="logo" alt="ALL CLEANING">
-      <h1>Mensajes <span class="accent">ALL</span></h1>
-      <p class="muted">Centro de atención de WhatsApp de ALL CLEANING</p>
+  <div id="login" class="screen login" hidden>
+    <div class="login-hero">
+      <img data-asset="fuxi" alt="Fuxi, la mascota de ALL CLEANING" class="hero-fuxi">
+      <h2>Fuxi está listo 🩷</h2>
+      <p>Todos los chats de WhatsApp de ALL CLEANING en un solo lugar.</p>
+    </div>
+    <form id="loginForm" class="login-form" autocomplete="on">
+      <div class="login-brand"><img data-asset="logo" alt="" class="login-logo"><span>Mensajes <b>ALL</b></span></div>
+      <h1>Bienvenido</h1>
+      <p class="muted">Inicia sesión para atender a tus clientes.</p>
       <label>Correo
         <input id="loginEmail" type="email" autocomplete="username" required placeholder="agente@allcleaning.co">
       </label>
@@ -48,7 +53,7 @@
   <div id="app" hidden>
     <header class="topbar">
       <div class="brand">
-        <img class="brand-logo" data-asset="logo" alt="ALL CLEANING">
+        <img class="brand-logo" data-asset="logo" alt="Fuxi · ALL CLEANING">
         <span class="brand-name">Mensajes <b>ALL</b></span>
       </div>
 
