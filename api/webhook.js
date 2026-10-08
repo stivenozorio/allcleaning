@@ -1,9 +1,28 @@
 import { createClient } from "@supabase/supabase-js";
 
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL,
-  process.env.SUPABASE_SECRET_KEY
-);
+// Cliente de servidor: usa SOLO la clave secreta (nunca se registra en logs).
+// Se crea de forma diferida para que la verificación GET de Meta funcione
+// aunque falte alguna variable de entorno.
+let supabaseClient = null;
+
+function getSupabase() {
+  if (!supabaseClient) {
+    const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
+    const key = process.env.SUPABASE_SECRET_KEY;
+
+    if (!url || !key) {
+      throw new Error(
+        "Faltan variables de entorno: NEXT_PUBLIC_SUPABASE_URL y/o SUPABASE_SECRET_KEY"
+      );
+    }
+
+    supabaseClient = createClient(url, key, {
+      auth: { persistSession: false, autoRefreshToken: false }
+    });
+  }
+
+  return supabaseClient;
+}
 
 export default async function handler(req, res) {
   // ============================================
@@ -40,6 +59,8 @@ export default async function handler(req, res) {
     const entries = body?.entry || [];
 
     try {
+      const supabase = getSupabase();
+
       for (const entry of entries) {
         const changes = entry?.changes || [];
 
@@ -87,6 +108,30 @@ export default async function handler(req, res) {
               }
 
               console.log("👤 Nombre:", contactName);
+
+              // ============================================
+              // EVITAR MENSAJES DUPLICADOS
+              // ============================================
+
+              const { data: existingMessage, error: existingError } =
+                await supabase
+                  .from("messages")
+                  .select("id")
+                  .eq("whatsapp_message_id", message.id)
+                  .maybeSingle();
+
+              if (existingError) {
+                console.error(
+                  "❌ Error verificando duplicado:",
+                  existingError
+                );
+                continue;
+              }
+
+              if (existingMessage) {
+                console.log("⚠️ Mensaje ya registrado:", message.id);
+                continue;
+              }
 
               // ============================================
               // CREAR / ACTUALIZAR CONTACTO
@@ -204,21 +249,6 @@ export default async function handler(req, res) {
               }
 
               // ============================================
-              // EVITAR MENSAJES DUPLICADOS
-              // ============================================
-
-              const { data: existingMessage } = await supabase
-                .from("messages")
-                .select("id")
-                .eq("whatsapp_message_id", message.id)
-                .maybeSingle();
-
-              if (existingMessage) {
-                console.log("⚠️ Mensaje ya registrado:", message.id);
-                continue;
-              }
-
-              // ============================================
               // GUARDAR MENSAJE
               // ============================================
 
@@ -240,6 +270,11 @@ export default async function handler(req, res) {
                 });
 
               if (messageError) {
+                if (messageError.code === "23505") {
+                  console.log("⚠️ Mensaje duplicado (reintento):", message.id);
+                  continue;
+                }
+
                 console.error(
                   "❌ Error guardando mensaje:",
                   messageError
