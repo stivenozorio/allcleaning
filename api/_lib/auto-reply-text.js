@@ -1,0 +1,2 @@
+export const AUTO_REPLY_TEXT =
+  "hola!! espero que estés bien , el desmanchador fucsia vale $80.000 el galón y $ 40.000 el litro, el valor del envió es de $14.000 si es pago anticipado y si es contra entrega valdría $19.000. ( para algunas ciudades el precio de envió cambia) normalmente llega en 4 o 5 días hábiles a tu dirección también esto depende de tu ubicación. si deseas hacer el pedido me das nombre completo, dirección, ciudad, teléfono, cantidad del producto (litro o galón) y si es pago contra entrega o anticipado.";

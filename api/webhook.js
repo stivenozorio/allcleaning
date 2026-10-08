@@ -1,4 +1,5 @@
 import { createClient } from "@supabase/supabase-js";
+import { maybeSendAutoReply, applyStatusUpdates } from "./_lib/flows.js";
 
 // Cliente de servidor: usa SOLO la clave secreta (nunca se registra en logs).
 // Se crea de forma diferida para que la verificación GET de Meta funcione
@@ -303,6 +304,14 @@ export default async function handler(req, res) {
               }
 
               console.log("✅ MENSAJE GUARDADO EN SUPABASE");
+
+              // Respuesta automática (una sola vez por conversación).
+              // Solo se llega aquí con mensajes reales entrantes del cliente.
+              await maybeSendAutoReply(supabase, {
+                conversation,
+                to: whatsappNumber,
+                ownNumber: value?.metadata?.display_phone_number
+              });
             }
           }
 
@@ -326,6 +335,8 @@ export default async function handler(req, res) {
               "📊 ESTADO:",
               JSON.stringify(value.statuses)
             );
+
+            await applyStatusUpdates(supabase, value.statuses);
           }
         }
       }
