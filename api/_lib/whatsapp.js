@@ -3,23 +3,25 @@
 
 const GRAPH_VERSION = process.env.WHATSAPP_GRAPH_VERSION || "v21.0";
 
+// Acepta WHATSAPP_PHONE_NUMBER_ID o, como alternativa, PHONE_NUMBER_ID.
+const phoneNumberId = () =>
+  process.env.WHATSAPP_PHONE_NUMBER_ID || process.env.PHONE_NUMBER_ID;
+
 export function whatsappConfigured() {
-  return Boolean(
-    process.env.WHATSAPP_ACCESS_TOKEN && process.env.WHATSAPP_PHONE_NUMBER_ID
-  );
+  return Boolean(process.env.WHATSAPP_ACCESS_TOKEN && phoneNumberId());
 }
 
 export async function sendWhatsAppText(to, body) {
   if (!whatsappConfigured()) {
     const error = new Error(
-      "Faltan WHATSAPP_ACCESS_TOKEN y/o WHATSAPP_PHONE_NUMBER_ID en Vercel"
+      "Faltan WHATSAPP_ACCESS_TOKEN y/o el ID del número (WHATSAPP_PHONE_NUMBER_ID) en Vercel"
     );
     error.code = "NOT_CONFIGURED";
     throw error;
   }
 
   const response = await fetch(
-    `https://graph.facebook.com/${GRAPH_VERSION}/${process.env.WHATSAPP_PHONE_NUMBER_ID}/messages`,
+    `https://graph.facebook.com/${GRAPH_VERSION}/${phoneNumberId()}/messages`,
     {
       method: "POST",
       headers: {
